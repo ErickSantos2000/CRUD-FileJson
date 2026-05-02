@@ -10,4 +10,4 @@ class Avicultor():
                 "cpf": self.cpf, "caf": self.caf}
     
 
-    feat: adiciona app.py e a classe modelo
+    
