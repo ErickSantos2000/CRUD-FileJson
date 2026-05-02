@@ -61,14 +61,32 @@ def postAvicultores():
         # pega lista de diciorios e a traduz para o formato JSON
         json.dump(lista_avicultores, f, indent=4, ensure_ascii=False)
 
-    return {"mensagem": f"Avicultor {novo_avicultor.nome} cadastrado!"}, 201
+    return {"mensagem": f"Avicultor {novo_avicultor.nome} cadastrado"}, 201
 
-@app.put("/avicultores")
-def putAvicultores():
-    pass
+@app.put("/avicultores/<nome>")
+def putAvicultores(nome):
 
-@app.delete("/avicultores")
-def deleteAvicultores():
+    dados = request.get_json()
+    arquivo_json = "avicultores.json"
+
+    with open(arquivo_json, "r") as f:
+        lista_avicultores = json.load(f)
+
+    for avicultor in lista_avicultores:
+        if avicultor["nome"] == nome:
+            avicultor["nome"] = dados.get("nome")
+            avicultor["nascimento"] =dados.get("nascimento")
+            avicultor["cpf"] =dados.get("cpf")
+            avicultor["caf"] =dados.get("caf")
+            break
+    with open(arquivo_json, "w") as f:
+        # pega lista de diciorios e a traduz para o formato JSON
+        json.dump(lista_avicultores, f, indent=4, ensure_ascii=False)
+
+    return {"mensagem": f"Dados de {nome} atualizados com sucesso"}, 200
+
+@app.delete("/avicultores/<nome>")
+def deleteAvicultores(nome):
     
     arquivo_json = "avicultores.json"
 
@@ -77,21 +95,14 @@ def deleteAvicultores():
             lista_avicultores = json.load(f)
 
     else:
-        return {"erro": "Nenhum avicultor cadastrado ainda"}
+        return {"erro": "nenhum avicultor cadastrado"}
 
-    dados = request.get_json()
-    nome_removido = dados.get("nome")
-
-    nova_lista = []
-
-    for avicultor in lista_avicultores:
-        if(avicultor["nome"] != nome_removido):
-            nova_lista.append(avicultor)
+    nova_lista = [a for a in lista_avicultores if a["nome"] != nome]
 
     with open(arquivo_json, "w") as f:
         json.dump(nova_lista, f,indent=4, ensure_ascii=False)
 
-    return {"mensagem": "Deletado"}, 200
+    return {"mensagem": f"Avicultor {nome} deletado"}, 200
 
 @app.get("/")
 def index():
