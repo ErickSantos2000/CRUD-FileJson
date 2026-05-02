@@ -1,11 +1,5 @@
 [
     {
-        "nome": "José Henrique",
-        "nascimento": "2001-05-15",
-        "cpf": "123.963.351-00",
-        "caf": "PB7635221"
-    },
-    {
         "nome": "Amilton Silava",
         "nascimento": "2001-05-15",
         "cpf": "123.963.351-00",
@@ -19,12 +13,6 @@
     },
     {
         "nome": "Fernando Ferreira",
-        "nascimento": "2001-05-15",
-        "cpf": "123.963.351-00",
-        "caf": "PB7635221"
-    },
-    {
-        "nome": "Mauricio Nicolas",
         "nascimento": "2001-05-15",
         "cpf": "123.963.351-00",
         "caf": "PB7635221"

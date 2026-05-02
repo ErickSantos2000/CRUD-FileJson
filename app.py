@@ -69,7 +69,29 @@ def putAvicultores():
 
 @app.delete("/avicultores")
 def deleteAvicultores():
-    pass
+    
+    arquivo_json = "avicultores.json"
+
+    if os.path.exists(arquivo_json):
+        with open(arquivo_json, "r") as f:
+            lista_avicultores = json.load(f)
+
+    else:
+        return {"erro": "Nenhum avicultor cadastrado ainda"}
+
+    dados = request.get_json()
+    nome_removido = dados.get("nome")
+
+    nova_lista = []
+
+    for avicultor in lista_avicultores:
+        if(avicultor["nome"] != nome_removido):
+            nova_lista.append(avicultor)
+
+    with open(arquivo_json, "w") as f:
+        json.dump(nova_lista, f,indent=4, ensure_ascii=False)
+
+    return {"mensagem": "Deletado"}, 200
 
 @app.get("/")
 def index():
