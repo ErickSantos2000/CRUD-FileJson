@@ -1,108 +1,86 @@
 from flask import Flask, request
 from models.Avicultor import Avicultor
-import os, json
+import sqlite3
+from helpers.database import get_conn
+
 
 app = Flask(__name__)
 
 @app.get("/avicultores")
 def getAvicultores():
-    # nome do arquivo JSON
-    arquivo_json = "avicultores.json"
+    avicultores = []
+    # DB
+    conn = None
+    try:
+        conn = get_conn()
 
-    # verifica se o arquivo JSON existe
-    if os.path.exists(arquivo_json):
-        # abre o arquivo no modo leitura "r" read
-        # with é um gerenciador de contexto, ele garante que o arquivo seja fechado assim que o codigo terminar a execução
-        # as f cria um apelido para o arquivo aberto 
-        with open(arquivo_json, "r") as f:
-            # le o arquivo JSON e converte para um OBJ Python, neste caso uma lista ou dicionario
-            lista_avicultores = json.load(f)
-    
-    else:
-        lista_avicultores = []
+        # 2 - Recuperar o cursor
+        cursor = conn.cursor()
 
-    return lista_avicultores, 200
+        # 3 - Preparar a consultar: query | statement
+        cursor.execute("select * from tb_avicultores")
+
+        # 4.1 - Iterar nos resultados: resultset (fetchall, fecthone)
+        rows = cursor.fetchall()
+
+        for row in rows:
+            id = row[0]
+            nome = row[1]
+            nascimento = row[2]
+            cpf = row[3]
+            caf = row[4]
+            avicultor = Avicultor(id, nome, nascimento, cpf, caf)
+            avicultores.append(avicultor.toDict())
+
+    except sqlite3.Error as e:
+        print(e)
+    finally:
+        # 5 - Fechar a conexão
+        if conn:
+            conn.close()
+
+    return avicultores, 200
 
 
 @app.post("/avicultores")
 def postAvicultores():
-    # recebe dados enviados pelo Thunder Client
-    dados = request.get_json()
 
-    # transforma dados em um OBJ da classe Avicultor
-    novo_avicultor = Avicultor (
-        nome=dados.get("nome"),
-        nascimento=dados.get("nascimento"),
-        cpf=dados.get("cpf"),
-        caf=dados.get("caf")
-    )
+    avicultorJson = request.get_json()
 
-    # nome do arquivo JSON
-    arquivo_json = "avicultores.json"
+    # DB
+    conn = None
+    try:
+        # 1 - Abrir a conexão
+        conn = get_conn()
 
-    # verifica se o arquivo JSON existe
-    if os.path.exists(arquivo_json):
-        # abre o arquivo no modo leitura "r" read
-        # with é um gerenciador de contexto, ele garante que o arquivo seja fechado assim que o codigo terminar a execução
-        # as f cria um apelido para o arquivo aberto 
-        with open(arquivo_json, "r") as f:
-            # le o arquivo JSON e converte para um OBJ Python, neste caso uma lista ou dicionario
-            lista_avicultores = json.load(f)
-    
-    else:
-        lista_avicultores = []
+        # 2 - Recuperar o cursor
+        cursor = conn.cursor()
 
-    # converte o novo avicultor em um dicionario e adiciona a lista de avicultores
-    lista_avicultores.append(novo_avicultor.toDict())
+        # 3 - Preparar a consultar: query | statement
+        cursor.execute(
+            "INSERT INTO tb_avicultores(nome, nascimento, cpf, caf) VALUES(?, ?, ?, ?)", (avicultorJson["nome"], avicultorJson["nascimento"], avicultorJson["cpf"], avicultorJson["caf"]))
 
-    # "w" write, abre o arquivo no modo de escrita
-    # o modo "w" apaga tudo que existia no arquivo e escreve a lista atualizada
-    with open(arquivo_json, "w") as f:
-        # pega lista de diciorios e a traduz para o formato JSON
-        json.dump(lista_avicultores, f, indent=4, ensure_ascii=False)
+        # 4.2 - Confirmar operação.
+        conn.commit()
 
-    return {"mensagem": f"Avicultor {novo_avicultor.nome} cadastrado"}, 201
+    except sqlite3.Error as e:
+        print(e)
+    finally:
+        # 5 - Fechar a conexão
+        if conn:
+            conn.close()
 
-@app.put("/avicultores/<nome>")
-def putAvicultores(nome):
+    return avicultorJson, 200
 
-    dados = request.get_json()
-    arquivo_json = "avicultores.json"
 
-    with open(arquivo_json, "r") as f:
-        lista_avicultores = json.load(f)
+@app.put("/avicultores")
+def putAvicultores():
+    pass
 
-    for avicultor in lista_avicultores:
-        if avicultor["nome"] == nome:
-            avicultor["nome"] = dados.get("nome")
-            avicultor["nascimento"] =dados.get("nascimento")
-            avicultor["cpf"] =dados.get("cpf")
-            avicultor["caf"] =dados.get("caf")
-            break
-    with open(arquivo_json, "w") as f:
-        # pega lista de diciorios e a traduz para o formato JSON
-        json.dump(lista_avicultores, f, indent=4, ensure_ascii=False)
 
-    return {"mensagem": f"Dados de {nome} atualizados com sucesso"}, 200
-
-@app.delete("/avicultores/<nome>")
-def deleteAvicultores(nome):
-    
-    arquivo_json = "avicultores.json"
-
-    if os.path.exists(arquivo_json):
-        with open(arquivo_json, "r") as f:
-            lista_avicultores = json.load(f)
-
-    else:
-        return {"erro": "nenhum avicultor cadastrado"}
-
-    nova_lista = [a for a in lista_avicultores if a["nome"] != nome]
-
-    with open(arquivo_json, "w") as f:
-        json.dump(nova_lista, f,indent=4, ensure_ascii=False)
-
-    return {"mensagem": f"Avicultor {nome} deletado"}, 200
+@app.delete("/avicultores")
+def deleteAvicultores():
+    pass
 
 @app.get("/")
 def index():

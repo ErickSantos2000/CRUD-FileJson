@@ -1,3 +1,5 @@
+from marshmallow import Schema, fields
+
 class Avicultor():
     def __init__(self, nome, nascimento, cpf, caf):
         self.nome = nome
@@ -10,4 +12,8 @@ class Avicultor():
                 "cpf": self.cpf, "caf": self.caf}
     
 
-    
+class AvicultorSchema(Schema):
+    nome = fields.Str()
+    nascimento = fields.Date()
+    cpf = fields.Str()
+    caf = fields.Str()
