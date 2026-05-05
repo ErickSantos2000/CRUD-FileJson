@@ -1,6 +1,6 @@
 from flask import Flask, request
 from models.Avicultor import Avicultor
-import os, json
+import json
 
 app = Flask(__name__)
 
@@ -9,17 +9,12 @@ def getAvicultores():
     # nome do arquivo JSON
     arquivo_json = "avicultores.json"
 
-    # verifica se o arquivo JSON existe
-    if os.path.exists(arquivo_json):
-        # abre o arquivo no modo leitura "r" read
-        # with é um gerenciador de contexto, ele garante que o arquivo seja fechado assim que o codigo terminar a execução
-        # as f cria um apelido para o arquivo aberto 
-        with open(arquivo_json, "r") as f:
-            # le o arquivo JSON e converte para um OBJ Python, neste caso uma lista ou dicionario
-            lista_avicultores = json.load(f)
-    
-    else:
-        lista_avicultores = []
+    # abre o arquivo no modo leitura "r" read
+    # with é um gerenciador de contexto, ele garante que o arquivo seja fechado assim que o codigo terminar a execução
+    # as f cria um apelido para o arquivo aberto 
+    with open(arquivo_json, "r") as f:
+        # le o arquivo JSON e converte para um OBJ Python, neste caso uma lista ou dicionario
+        lista_avicultores = json.load(f)
 
     return lista_avicultores, 200
 
@@ -40,17 +35,12 @@ def postAvicultores():
     # nome do arquivo JSON
     arquivo_json = "avicultores.json"
 
-    # verifica se o arquivo JSON existe
-    if os.path.exists(arquivo_json):
-        # abre o arquivo no modo leitura "r" read
-        # with é um gerenciador de contexto, ele garante que o arquivo seja fechado assim que o codigo terminar a execução
-        # as f cria um apelido para o arquivo aberto 
-        with open(arquivo_json, "r") as f:
-            # le o arquivo JSON e converte para um OBJ Python, neste caso uma lista ou dicionario
-            lista_avicultores = json.load(f)
-    
-    else:
-        lista_avicultores = []
+    # abre o arquivo no modo leitura "r" read
+    # with é um gerenciador de contexto, ele garante que o arquivo seja fechado assim que o codigo terminar a execução
+    # as f cria um apelido para o arquivo aberto 
+    with open(arquivo_json, "r") as f:
+        # le o arquivo JSON e converte para um OBJ Python, neste caso uma lista ou dicionario
+        lista_avicultores = json.load(f)
 
     # converte o novo avicultor em um dicionario e adiciona a lista de avicultores
     lista_avicultores.append(novo_avicultor.toDict())
@@ -90,12 +80,9 @@ def deleteAvicultores(nome):
     
     arquivo_json = "avicultores.json"
 
-    if os.path.exists(arquivo_json):
-        with open(arquivo_json, "r") as f:
-            lista_avicultores = json.load(f)
 
-    else:
-        return {"erro": "nenhum avicultor cadastrado"}
+    with open(arquivo_json, "r") as f:
+        lista_avicultores = json.load(f)
 
     nova_lista = [a for a in lista_avicultores if a["nome"] != nome]
 
