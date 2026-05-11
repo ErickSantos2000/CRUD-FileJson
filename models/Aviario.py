@@ -1,21 +1,19 @@
 from marshmallow import Schema, fields
 
 class Aviario:
-    def __init__(self, id, nome, endereco, avicultor_id):
+    def __init__(self, id, nome, capacidade):
         self.id = id
         self.nome = nome
-        self.endereco = endereco
-        self.avicultor_id = avicultor_id
+        self.capacidade = capacidade
 
     def toDict(self):
         return {
             "id": self.id, 
             "nome": self.nome, 
-            "endereco": self.endereco, 
-            "avicultor_id": self.avicultor_id
+            "capacidade": self.capacidade
         }
 
 class AviarioSchema(Schema):
     nome = fields.Str(required=True, error_messages={"required": "O nome do aviário é obrigatório."})
     endereco = fields.Str(required=True)
-    avicultor_id = fields.Int(required=True)
+    capacidade = fields.Str(required=True)
